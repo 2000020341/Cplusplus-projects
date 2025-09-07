@@ -2,6 +2,19 @@
 #include <vector>
 #include <iomanip>
 
+// ANSI Color Codes
+#define RESET   "\033[0m"
+#define RED     "\033[31m"
+#define GREEN   "\033[32m"
+#define YELLOW  "\033[33m"
+#define BLUE    "\033[34m"
+#define MAGENTA "\033[35m"
+#define CYAN    "\033[36m"
+#define WHITE   "\033[37m"
+#define BOLD    "\033[1m"
+#define BG_BLACK "\033[40m"
+#define BG_WHITE "\033[47m"
+
 class TicTacToe {
 private:
     std::vector<std::vector<char>> board;
@@ -11,15 +24,22 @@ public:
     TicTacToe() : board(3, std::vector<char>(3, ' ')), currentPlayer('X') {}
 
     void displayBoard() {
-        std::cout << "\n   1   2   3\n";
+        std::cout << "\n" << CYAN << BOLD << "   1   2   3" << RESET << "\n";
         for (int i = 0; i < 3; i++) {
-            std::cout << i + 1 << "  ";
+            std::cout << CYAN << BOLD << i + 1 << RESET << "  ";
             for (int j = 0; j < 3; j++) {
-                std::cout << board[i][j];
-                if (j < 2) std::cout << " | ";
+                char cell = board[i][j];
+                if (cell == 'X') {
+                    std::cout << RED << BOLD << cell << RESET;
+                } else if (cell == 'O') {
+                    std::cout << BLUE << BOLD << cell << RESET;
+                } else {
+                    std::cout << WHITE << cell << RESET;
+                }
+                if (j < 2) std::cout << YELLOW << " | " << RESET;
             }
             std::cout << "\n";
-            if (i < 2) std::cout << "  -----------\n";
+            if (i < 2) std::cout << YELLOW << "  -----------" << RESET << "\n";
         }
         std::cout << "\n";
     }
@@ -27,12 +47,12 @@ public:
     bool makeMove(int row, int col) {
         // Check if position is valid and empty
         if (row < 0 || row > 2 || col < 0 || col > 2) {
-            std::cout << "Invalid position! Please enter row and column between 1-3.\n";
+            std::cout << RED << "❌ Invalid position! Please enter row and column between 1-3." << RESET << "\n";
             return false;
         }
         
         if (board[row][col] != ' ') {
-            std::cout << "Position already taken! Please choose an empty cell.\n";
+            std::cout << RED << "❌ Position already taken! Please choose an empty cell." << RESET << "\n";
             return false;
         }
 
@@ -91,15 +111,19 @@ public:
     }
 
     void playGame() {
-        std::cout << "=== Welcome to Tic-Tac-Toe ===\n";
-        std::cout << "Players will take turns. X goes first.\n";
-        std::cout << "Enter row and column (1-3) separated by space to make your move.\n";
+        std::cout << GREEN << BOLD << "🎮 === Welcome to Tic-Tac-Toe === 🎮" << RESET << "\n";
+        std::cout << YELLOW << "Players will take turns. " << RED << BOLD << "X" << RESET << YELLOW << " goes first." << RESET << "\n";
+        std::cout << CYAN << "Enter row and column (1-3) separated by space to make your move." << RESET << "\n";
 
         while (true) {
             displayBoard();
             
-            std::cout << "Player " << currentPlayer << "'s turn.\n";
-            std::cout << "Enter row and column (1-3): ";
+            if (currentPlayer == 'X') {
+                std::cout << RED << BOLD << "Player X" << RESET << "'s turn.\n";
+            } else {
+                std::cout << BLUE << BOLD << "Player O" << RESET << "'s turn.\n";
+            }
+            std::cout << MAGENTA << "Enter row and column (1-3): " << RESET;
             int row, col;
             std::cin >> row >> col;
 
@@ -110,13 +134,17 @@ public:
             if (makeMove(row, col)) {
                 if (checkWin()) {
                     displayBoard();
-                    std::cout << "🎉 Player " << currentPlayer << " wins! 🎉\n";
+                    if (currentPlayer == 'X') {
+                        std::cout << GREEN << BOLD << "🎉 Player " << RED << BOLD << currentPlayer << GREEN << BOLD << " wins! 🎉" << RESET << "\n";
+                    } else {
+                        std::cout << GREEN << BOLD << "🎉 Player " << BLUE << BOLD << currentPlayer << GREEN << BOLD << " wins! 🎉" << RESET << "\n";
+                    }
                     break;
                 }
                 
                 if (isBoardFull()) {
                     displayBoard();
-                    std::cout << "It's a tie! The board is full.\n";
+                    std::cout << YELLOW << BOLD << "🤝 It's a tie! The board is full." << RESET << "\n";
                     break;
                 }
                 
@@ -126,14 +154,15 @@ public:
 
         // Ask if players want to play again
         char playAgain;
-        std::cout << "Do you want to play again? (y/n): ";
+        std::cout << CYAN << "Do you want to play again? (y/n): " << RESET;
         std::cin >> playAgain;
         
         if (playAgain == 'y' || playAgain == 'Y') {
+            std::cout << GREEN << "🔄 Starting new game..." << RESET << "\n\n";
             resetGame();
             playGame();
         } else {
-            std::cout << "Thanks for playing!\n";
+            std::cout << MAGENTA << BOLD << "👋 Thanks for playing!" << RESET << "\n";
         }
     }
 };
